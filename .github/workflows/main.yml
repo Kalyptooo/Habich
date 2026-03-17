@@ -1,1 +1,42 @@
-habich/.github/workflows/build-apk.yml
+name: Build HabIch? APK
+ 
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+ 
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+ 
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+ 
+      - name: Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.6'
+          channel: 'stable'
+          cache: true
+ 
+      - name: pub get
+        run: flutter pub get
+ 
+      - name: Build APK
+        run: flutter build apk --release --no-shrink
+ 
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HabIch-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+ 
